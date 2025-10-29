@@ -26,7 +26,7 @@ class DomainHandler:
                 return company_id
 
             if response.status_code == DomainHandler.NOT_FOUND_STATUS_CODE:
-                logging.warning("the domain service could not find the company id for the domain:%s", domain, extra=extra)
+                logging.error("the domain service could not find the company id for the domain:%s", domain, extra=extra)
                 return None
 
             logging.error("failed to get the company id from domain service, domain:%s, status code:%d", domain, response.status_code, extra=extra)

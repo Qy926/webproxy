@@ -24,7 +24,7 @@ class BillingHandler:
                 return None
 
             billing_info = response.json().get('data', {})
-            billing = billing_info.get('billing')
+            billing = billing_info.get('billing', 0)
             logging.info("succeed to get the user billing info from billing service, user id:%s, billing:%d", user_id, billing, extra=extra)
             return billing
         except Exception as e:
@@ -41,7 +41,7 @@ class BillingHandler:
                 return None
 
             billing_info = response.json().get('data', {})
-            billing = billing_info.get('billing')
+            billing = billing_info.get('billing', 0)
             logging.info("succeed to get the company billing info from billing service, company id:%s, billing:%d", company_id, billing, extra=extra)
             return billing
         except Exception as e:

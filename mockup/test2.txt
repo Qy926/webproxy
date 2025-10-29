@@ -1,0 +1,1 @@
+构造log，让AI优化程序逻辑，加上domain不存在的cache，避免频繁调用远端的Domain Micro Service

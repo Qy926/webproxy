@@ -30,19 +30,20 @@ class CacheHandler:
             try:
                 response = requests.head(url=get_url)
                 if response.status_code == CacheHandler.SUCCEED_GET_STATUS_CODE:
+                    logging.info("the key:%s exists in the cache service", key, extra=extra)
                     return True
 
                 if response.status_code == CacheHandler.NOT_FOUND_STATUS_CODE:
-                    logging.info("the key does not exist in cache, key:%s", key, extra=extra)
+                    logging.warning("the key:%s does not exist in the cache service", key, extra=extra)
                     return False
 
-                logging.warning("failed to check the cache key exist, key:%s, status code:%d, retry:%d", key, response.status_code, retry, extra=extra)
+                logging.warning("failed to check the key:%s whether exists in the cache service, status code:%d, retry:%d", key, response.status_code, retry, extra=extra)
             except Exception as e:
-                logging.error("failed to check the cache key exist, key:%s, retry:%d, exception[%r]", key, retry, e, extra=extra)
+                logging.warning("failed to check the key:%s whether exists in the cache service, retry:%d, exception[%r]", key, retry, e, extra=extra)
 
             time.sleep(sleep_time)
 
-        logging.error("failed to check the cache key exist, key:%s", key, extra=extra)
+        logging.error("failed to check the key:%s whether exists in the cache service", key, extra=extra)
         return False
 
     def get_cache_key_value(self, key, extra=None, trace_id=None):
@@ -52,19 +53,21 @@ class CacheHandler:
             try:
                 response = requests.get(url=get_url)
                 if response.status_code == CacheHandler.SUCCEED_GET_STATUS_CODE:
-                    return response.json().get('data', {}).get(key)
+                    value = response.json().get('data', {}).get(key)
+                    logging.info("succeed to get the key:%s from the cache service, value:%r", key, value, extra=extra)
+                    return value
 
                 if response.status_code == CacheHandler.NOT_FOUND_STATUS_CODE:
-                    logging.info("the key does not exist in cache, key:%s", key)
+                    logging.warning("the key:%s does not exist in the cache service", key, extra=extra)
                     return None
 
-                logging.warning("failed to get the cache key, key:%s, status code:%d, retry:%d", key, response.status_code, retry, extra=extra)
+                logging.warning("failed to get the key:%s from the cache service, status code:%d, retry:%d", key, response.status_code, retry, extra=extra)
             except Exception as e:
-                logging.error("failed to get the cache key, key:%s, retry:%d, exception[%r]", key, retry, e, extra=extra)
+                logging.error("failed to get the key:%s from the cache service, retry:%d, exception[%r]", key, retry, e, extra=extra)
 
             time.sleep(sleep_time)
 
-        logging.error("failed to get the cache key, key:%s", key, extra=extra)
+        logging.error("failed to get the key:%s from the cache service", key, extra=extra)
         return None
 
     def set_cache_key_value(self, key, value, extra=None, trace_id=None, ttl=0):
@@ -94,12 +97,13 @@ class CacheHandler:
             try:
                 response = requests.post(url=post_url, **kwargs)
                 if response.status_code == CacheHandler.SUCCEED_POST_STATUS_CODE:
+                    logging.info("succeed to set the key:%s in the cache service, value:%s", key, value, extra=extra)
                     return
 
-                logging.warning("failed to set the cache, key:%s, value:%s, status code:%d, retry:%d", key, value, response.status_code, retry, extra=extra)
+                logging.warning("failed to set the key:%s, value:%s in the cache service, status code:%d, retry:%d", key, value, response.status_code, retry, extra=extra)
             except Exception as e:
-                logging.error("failed to set the cache, key:%s, value:%s, retry:%d, exception[%r]", key, value, retry, e, extra=extra)
+                logging.error("failed to set the key:%s, value:%s in the cache service, retry:%d, exception[%r]", key, value, retry, e, extra=extra)
 
             time.sleep(sleep_time)
 
-        logging.error("failed to set the cache, key:%s, value:%s", key, value, extra=extra)
+        logging.error("failed to set the key:%s, value:%s in the cache service", key, value, extra=extra)
